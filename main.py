@@ -1,75 +1,120 @@
-import turtle as tt
+# здесь подключаются модули
+import pygame as pg
 from dot import Dot
 from settings import Settings
 import time
 from random import randint as rnd
 import math as m
+import os
 
-tt.tracer(0, 0)
+os.environ['SDL_VIDEO_WINDOW_POS'] = '%i,%i' % (100, 100)
 
-settings = Settings()
+# здесь определяются константы, классы и функции
+FPS = 25
 
+# здесь происходит инициация, создание объектов и др.
+pg.init()
 
-def setka():
-    set = tt.Turtle()
-    set.speed(0)
-    set.hideturtle()
-    set.color("grey")
+size = 800
+screen = pg.display.set_mode((size, size), flags=pg.DOUBLEBUF | pg.NOFRAME)
 
-    c = [-settings.borders, -settings.borders]
-    step_nums = 24
-    step = abs(c[0] * 2 / step_nums)
-    all_way = abs(c[0]) * 2
+surf = pg.Surface((size, size))
+clock = pg.time.Clock()
 
-    for i in range(2):
-        set.left(90)
-        for k in range(step_nums + 1):
-            set.up()
-            set.goto(c[0], c[1])
-            set.down()
-
-            set.fd(all_way)
-            c[i] += step
-        all_way += step * 2
-
-
-if settings.show_borders:
-    setka()
+settings = Settings(size, surf)
+# если надо до цикла отобразить объекты на экране
+pg.display.update()
+pg.font.init()
+myfont = pg.font.SysFont('Comic Sans MS', 10)
 
 arr = []
 # coors = []
-n = 100
+n = 300
+chanse = 3
 
 for k in range(n):
-    x, y = rnd(-settings.borders, settings.borders),\
-        rnd(-settings.borders, settings.borders)
-    polar = rnd(1, settings.polar_number)
-    arr.append([Dot(x, y, polar, settings), x, y, polar])
-    # coors.append([x, y, arr[k].polarity])
+    x, y = rnd(0, settings.borders),\
+        rnd(0, settings.borders)
 
-# print(coors)
+    # x, y = 300 + 0 * k, 500 + k * 150
+
+    # x, y = rnd(300, 350), rnd(300, 350)
+    # polar = rnd(1, settings.polar_number)
+    polar = rnd(1, 3 + chanse)
+    polar = 1 if polar < 1 + chanse else polar - chanse + 1
+    arr.append(Dot(x, y, polar, settings))
+
+rects_ready = False
+
+# главный цикл
 while True:
+    surf.fill((31, 46, 46))
 
-    settings.main_drawer.clear()
-    b = arr
+    # задержка
+    clock.tick(FPS)
+
+    fps = round(clock.get_fps())
+
+    text_fps = myfont.render(str(fps), True, (0, 255, 0))
+
+    # if o == 1 and n == 0:
+    #     if arr[0][0].rect.clip(arr[1][0].rect):
+    #         d_x = abs(arr[0][0].x - arr[1][0].x)
+    #         d_y = abs(arr[0][0].y - arr[1][0].y)
+    #
+    #         L = m.sqrt(d_x ** 2 + d_y ** 2)
+    #
+    #         a = 360 - m.degrees(m.asin(d_y / L))
+    #
+    #         koef = 90
+    #
+    #         print(arr[0][0].speed_y)
+    #
+    #         arr[0][0].speed_x *= m.cos(m.radians(a)) * 100 // 1 / koef
+    #         arr[0][0].speed_y *= m.sin(m.radians(a)) * 100 // 1 / koef
+    #         print(arr[0][0].speed_y)
+    #         print("\n")
+    #         a = 360 - m.degrees(m.asin(d_x / L))
+    #
+    #         arr[1][0].speed_x *= m.cos(m.radians(a)) * 100 // 1 / koef
+    #         arr[1][0].speed_y *= m.sin(m.radians(a)) * 100 // 1 / koef
 
     for n, dot in enumerate(arr):
-        dot = dot[0]
-        b = sorted(b, key=lambda el: m.sqrt(
-            (el[1] - dot.x) ** 2 + (el[2] - dot.y)**2))
 
-        for t in b:
-            if not dot.check_gravity(t[1], t[2], t[3]):
-                break
+        if dot.y <= 60 or dot.y >= settings.borders - 60:
+            dot.borders_gravity()
+
+        if dot.x <= 60 or dot.x >= settings.borders - 60:
+            dot.borders_gravity()
+
+        for t in arr:
+            if rects_ready and t != dot:
+                if dot.rect.clip(t.rect):
+                    dot.check_gravity(t.x, t.y, t.polarity)
 
         dot.update_pos()
-        arr[n][1] = dot.x
-        arr[n][2] = dot.y
+
+        # print(n, " ==> ", arr[n][0].speed_x, " ", arr[n][0].speed_y)
 
         dot.draw()
+        if settings.show_borders:
+            dot.draw_borders()
 
-    # time.sleep(0.01)
-    tt.update()
+    rects_ready = True
 
+    screen.blit(surf, (0, 0))
+    # pg.display.update(surf)
 
-tt.mainloop()
+    screen.blit(text_fps, (10, 10))
+
+    # цикл обработки событий
+    for i in pg.event.get():
+        if i.type == pg.QUIT:
+            exit()
+
+    # --------
+    # изменение объектов и многое др.
+    # --------
+
+    # обновление экрана
+    pg.display.update()
