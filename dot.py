@@ -13,6 +13,8 @@ class Dot:
 
         self.mass = 10
 
+        self.v = rnd(7, 13) / 10
+
         self.x = x_cor
         self.y = y_cor
 
@@ -66,29 +68,36 @@ class Dot:
     def borders_gravity(self):
         # Отталкивание от стенок границы
         # <<<<<
-        self.f_speed_x = 0
-        self.f_speed_y = 0
 
-        bb = 60
-        force = 2
-        dist = self.settings.borders - self.x
-        if dist <= bb:
-            self.speed_x -= ((bb - dist) / bb) * force
-        dist = self.x
-        if dist <= bb:
-            self.speed_x += ((bb - dist) / bb) * force
+        if self.y <= 60 or self.y >= self.settings.borders - 60\
+                or self.x <= 60 or self.x >= self.settings.borders - 60:
 
-        dist = self.settings.borders - self.y
-        if dist <= bb:
-            self.speed_y -= ((bb - dist) / bb) * force
-        dist = self.y
-        if dist <= bb:
-            self.speed_y += ((bb - dist) / bb) * force
+            self.f_speed_x = 0
+            self.f_speed_y = 0
+
+            bb = 60
+            force = 5
+            dist = self.settings.borders - self.x
+            if dist <= bb:
+                self.speed_x -= ((bb - dist) / bb) * force * self.v
+            dist = self.x
+            if dist <= bb:
+                self.speed_x += ((bb - dist) / bb) * force * self.v
+
+            dist = self.settings.borders - self.y
+            if dist <= bb:
+                self.speed_y -= ((bb - dist) / bb) * force * self.v
+            dist = self.y
+            if dist <= bb:
+                self.speed_y += ((bb - dist) / bb) * force * self.v
         # >>>>>
 
-    def check_gravity(self, x, y, polar):
+    def check_gravity(self, x, y, polar, gr=0):
 
-        if m.sqrt((self.x - x)**2 + (self.y - y)**2) <= self.gravity_rad:
+        if not gr:
+            gr = self.gravity_rad
+
+        if m.sqrt((self.x - x)**2 + (self.y - y)**2) <= gr:
 
             self.polarity_koef = self.settings.polars[
                 self.polarity][str(polar)]
@@ -100,18 +109,18 @@ class Dot:
             dist_x = abs(self.x - x)
             koef_x = -1 if self.x < x else 1
 
-            if dist_x <= self.gravity_rad:
+            if dist_x <= gr:
                 if dist_x != 0:
-                    self.f_speed_x = koef_x * (dist_x / 50)
+                    self.f_speed_x = koef_x * (dist_x / 50) * self.v
                     # self.f_speed_x = koef_x * \
                     #     ((self.gravity_rad - dist_x) / (self.gravity_rad / 2)) / 13
 
             dist_y = abs(self.y - y)
             koef_y = -1 if self.y < y else 1
 
-            if dist_y <= self.gravity_rad:
+            if dist_y <= gr:
                 if dist_y != 0:
-                    self.f_speed_y = koef_y * (dist_y / 50)
+                    self.f_speed_y = koef_y * (dist_y / 50) * self.v
                     # self.f_speed_y = koef_y * \
                     #     ((self.gravity_rad - dist_y) / (self.gravity_rad / 2)) / 13
 

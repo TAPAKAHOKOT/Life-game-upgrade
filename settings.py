@@ -8,17 +8,21 @@ class Settings:
 
         self.show_borders = False
 
+        self.mouse_force = 4
+
         self.dots_num = 1
 
-        self.f_tr = 0.9
+        self.f_tr = 0.93
 
-        self.dots_gravity_rad = 50
+        self.dots_gravity_rad = 30
 
         self.borders = size
 
         self.polar_number = 4
 
-        self.dots_rad = 3
+        self.dots_rad = 2
+
+        self.obs = []
 
         # self.maxpspeed = 150
 
@@ -27,8 +31,8 @@ class Settings:
 
         # 1: red       2: blue       3:yellow       4: pink
         self.polars = {
-            1: {"1": -0.1, "2": 1.5, "3": 1, "4": 2},
-            2: {"1": -0.01, "2": 1, "3": 1, "4": 1},
-            3: {"1": 1, "2": 1, "3": 1, "4": 1},
-            4: {"1": 0, "2": 1, "3": 0, "4": 1}
+            1: {"1": 0.2, "2": 1.5, "3": 1, "4": 0, "mouse": self.mouse_force},
+            2: {"1": 1, "2": 1, "3": 1, "4": 1, "mouse": self.mouse_force},
+            3: {"1": 0, "2": 1, "3": 1, "4": 0, "mouse": self.mouse_force},
+            4: {"1": 1, "2": 1, "3": 3, "4": -0.1, "mouse": self.mouse_force}
         }

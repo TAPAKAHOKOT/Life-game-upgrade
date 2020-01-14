@@ -7,114 +7,98 @@ from random import randint as rnd
 import math as m
 import os
 
-os.environ['SDL_VIDEO_WINDOW_POS'] = '%i,%i' % (100, 100)
 
-# здесь определяются константы, классы и функции
-FPS = 25
+if __name__ == "__main__":
+    os.environ['SDL_VIDEO_WINDOW_POS'] = '%i,%i' % (100, 100)
 
-# здесь происходит инициация, создание объектов и др.
-pg.init()
+    # здесь определяются константы, классы и функции
+    FPS = 60
 
-size = 800
-screen = pg.display.set_mode((size, size), flags=pg.DOUBLEBUF | pg.NOFRAME)
+    # здесь происходит инициация, создание объектов и др.
+    pg.init()
 
-surf = pg.Surface((size, size))
-clock = pg.time.Clock()
+    size = 800
+    screen = pg.display.set_mode((size, size), flags=pg.DOUBLEBUF | pg.NOFRAME)
 
-settings = Settings(size, surf)
-# если надо до цикла отобразить объекты на экране
-pg.display.update()
-pg.font.init()
-myfont = pg.font.SysFont('Comic Sans MS', 10)
+    surf = pg.Surface((size, size))
+    clock = pg.time.Clock()
 
-arr = []
-# coors = []
-n = 300
-chanse = 3
+    settings = Settings(size, surf)
+    # если надо до цикла отобразить объекты на экране
+    pg.display.update()
+    pg.font.init()
+    myfont = pg.font.SysFont('Comic Sans MS', 10)
 
-for k in range(n):
-    x, y = rnd(0, settings.borders),\
-        rnd(0, settings.borders)
+    arr = []
+    poses = []
+    # coors = []
+    n = 550
+    chanse = 3
 
-    # x, y = 300 + 0 * k, 500 + k * 150
+    for k in range(n):
+        x, y = rnd(0, settings.borders),\
+            rnd(0, settings.borders)
 
-    # x, y = rnd(300, 350), rnd(300, 350)
-    # polar = rnd(1, settings.polar_number)
-    polar = rnd(1, 3 + chanse)
-    polar = 1 if polar < 1 + chanse else polar - chanse + 1
-    arr.append(Dot(x, y, polar, settings))
+        # x, y = 300 + 0 * k, 500 + k * 150
 
-rects_ready = False
+        # x, y = rnd(300, 350), rnd(300, 350)
+        # polar = rnd(1, settings.polar_number)
+        polar = rnd(1, 3 + chanse)
+        polar = 1 if polar < 1 + chanse else polar - chanse + 1
+        arr.append(Dot(x, y, polar, settings))
 
-# главный цикл
-while True:
-    surf.fill((31, 46, 46))
+    rects_ready = False
 
-    # задержка
-    clock.tick(FPS)
+    for dot in arr:
+        dot.draw()
+    # главный цикл
+    while True:
+        surf.fill((31, 46, 46))
 
-    fps = round(clock.get_fps())
+        # задержка
+        clock.tick(FPS)
 
-    text_fps = myfont.render(str(fps), True, (0, 255, 0))
+        fps = round(clock.get_fps())
 
-    # if o == 1 and n == 0:
-    #     if arr[0][0].rect.clip(arr[1][0].rect):
-    #         d_x = abs(arr[0][0].x - arr[1][0].x)
-    #         d_y = abs(arr[0][0].y - arr[1][0].y)
-    #
-    #         L = m.sqrt(d_x ** 2 + d_y ** 2)
-    #
-    #         a = 360 - m.degrees(m.asin(d_y / L))
-    #
-    #         koef = 90
-    #
-    #         print(arr[0][0].speed_y)
-    #
-    #         arr[0][0].speed_x *= m.cos(m.radians(a)) * 100 // 1 / koef
-    #         arr[0][0].speed_y *= m.sin(m.radians(a)) * 100 // 1 / koef
-    #         print(arr[0][0].speed_y)
-    #         print("\n")
-    #         a = 360 - m.degrees(m.asin(d_x / L))
-    #
-    #         arr[1][0].speed_x *= m.cos(m.radians(a)) * 100 // 1 / koef
-    #         arr[1][0].speed_y *= m.sin(m.radians(a)) * 100 // 1 / koef
+        text_fps = myfont.render(str(fps), True, (0, 255, 0))
 
-    for n, dot in enumerate(arr):
+        mouse_pos = pg.mouse.get_pos()
+        m_rect = (int(mouse_pos[0] - settings.dots_gravity_rad * 5), int(mouse_pos[1] - settings.dots_gravity_rad * 5),
+                  int(settings.dots_gravity_rad * 10), int(settings.dots_gravity_rad * 10))
+        m_rect = pg.Rect(m_rect)
 
-        if dot.y <= 60 or dot.y >= settings.borders - 60:
+        for k in m_rect.collidelistall([k.rect for k in arr]):
+            arr[k].check_gravity(mouse_pos[0], mouse_pos[1], "mouse", 100)
+
+        for dot in arr:
             dot.borders_gravity()
 
-        if dot.x <= 60 or dot.x >= settings.borders - 60:
-            dot.borders_gravity()
-
-        for t in arr:
-            if rects_ready and t != dot:
-                if dot.rect.clip(t.rect):
+            for t in dot.rect.collidelistall([k.rect for k in arr]):
+                t = arr[t]
+                if t != dot:
                     dot.check_gravity(t.x, t.y, t.polarity)
 
-        dot.update_pos()
+            dot.update_pos()
 
-        # print(n, " ==> ", arr[n][0].speed_x, " ", arr[n][0].speed_y)
+            dot.draw()
+            if settings.show_borders:
+                dot.draw_borders()
 
-        dot.draw()
-        if settings.show_borders:
-            dot.draw_borders()
+        rects_ready = True
 
-    rects_ready = True
+        screen.blit(surf, (0, 0))
+        # pg.display.update(surf)
 
-    screen.blit(surf, (0, 0))
-    # pg.display.update(surf)
+        screen.blit(text_fps, (10, 10))
 
-    screen.blit(text_fps, (10, 10))
+        # цикл обработки событий
+        for i in pg.event.get():
+            if i.type == pg.QUIT:
+                exit()
 
-    # цикл обработки событий
-    for i in pg.event.get():
-        if i.type == pg.QUIT:
-            exit()
+        # --------
+        # изменение объектов и многое др.
+        # --------
 
-    # --------
-    # изменение объектов и многое др.
-    # --------
-
-    # обновление экрана
-    pg.display.update()
+        # обновление экрана
+        pg.display.update()
