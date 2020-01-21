@@ -2,6 +2,7 @@
 import math as m
 from random import randint as rnd
 import pygame as pg
+# from numba import njit
 
 
 class Dot:
@@ -30,7 +31,7 @@ class Dot:
         self.polarity = pol
         self.polarity_koef = 1
 
-        self.color = self.settings.colors[rnd(0, 1)]
+        self.color = self.settings.colors[1]
         # self.color = self.settings.colors[self.polarity - 1]
 
     def draw(self):
@@ -101,6 +102,10 @@ class Dot:
             gr = self.gravity_rad
 
         if m.sqrt((self.x - x)**2 + (self.y - y)**2) <= gr:
+
+            if polar != "mouse":
+                pg.draw.line(self.settings.screen, self.color,
+                             (self.x, self.y), (x, y), 1)
 
             self.polarity_koef = self.settings.polars[
                 self.polarity][str(polar)]

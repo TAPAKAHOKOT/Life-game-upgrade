@@ -20,6 +20,8 @@ class Settings:
 
         self.polar_number = 1
 
+        self.lines = []
+
         self.dots_rad = 2
 
         self.obs = []

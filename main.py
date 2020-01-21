@@ -70,13 +70,14 @@ if __name__ == "__main__":
         m_rect = pg.Rect(m_rect)
 
         for k in m_rect.collidelistall([k.rect for k in arr]):
-            arr[k].check_gravity(mouse_pos[0], mouse_pos[1], "mouse", 100)
+            arr[k].check_gravity(mouse_pos[0], mouse_pos[1], "mouse", gr=100)
 
-        for dot in arr:
+        for ind, dot in enumerate(arr):
+
             dot.borders_gravity()
 
-            for t in dot.rect.collidelistall([k.rect for k in arr]):
-                t = arr[t]
+            for i in dot.rect.collidelistall([k.rect for k in arr]):
+                t = arr[i]
                 if t != dot:
                     dot.check_gravity(t.x, t.y, t.polarity)
 
