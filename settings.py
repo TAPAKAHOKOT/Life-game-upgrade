@@ -18,7 +18,7 @@ class Settings:
 
         self.borders = size
 
-        self.polar_number = 4
+        self.polar_number = 1
 
         self.dots_rad = 2
 
@@ -30,9 +30,10 @@ class Settings:
                        (255, 191, 0), (241, 156, 187)]
 
         # 1: red       2: blue       3:yellow       4: pink
+
         self.polars = {
-            1: {"1": 0.2, "2": 1.5, "3": 1, "4": 0, "mouse": self.mouse_force},
-            2: {"1": 1, "2": 1, "3": 1, "4": 1, "mouse": self.mouse_force},
-            3: {"1": 0, "2": 1, "3": 1, "4": 0, "mouse": self.mouse_force},
+            1: {"1": 0.9999999, "2": 0, "3": 1, "4": 0, "mouse": self.mouse_force},
+            2: {"1": 0, "2": 0.999, "3": 1, "4": 1, "mouse": self.mouse_force},
+            3: {"1": 0.1, "2": 1, "3": 1, "4": 0, "mouse": self.mouse_force},
             4: {"1": 1, "2": 1, "3": 3, "4": -0.1, "mouse": self.mouse_force}
         }

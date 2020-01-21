@@ -30,11 +30,14 @@ class Dot:
         self.polarity = pol
         self.polarity_koef = 1
 
+        self.color = self.settings.colors[rnd(0, 1)]
+        # self.color = self.settings.colors[self.polarity - 1]
+
     def draw(self):
         # self.rect_ch = pg.draw.circle(self.settings.screen, (31, 250, 46, 250),
         #                               (int(self.x), int(self.y)), self.gravity_rad, 1)
 
-        self.rect_d = pg.draw.circle(self.settings.screen, self.settings.colors[self.polarity - 1],
+        self.rect_d = pg.draw.circle(self.settings.screen, self.color,
                                      (int(self.x), int(self.y)), self.rad)
         rect = (int(self.x - self.gravity_rad), int(self.y - self.gravity_rad),
                 int(self.gravity_rad * 2), int(self.gravity_rad * 2))

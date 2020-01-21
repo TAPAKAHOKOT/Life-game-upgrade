@@ -12,12 +12,12 @@ if __name__ == "__main__":
     os.environ['SDL_VIDEO_WINDOW_POS'] = '%i,%i' % (100, 100)
 
     # здесь определяются константы, классы и функции
-    FPS = 60
+    FPS = 30
 
     # здесь происходит инициация, создание объектов и др.
     pg.init()
 
-    size = 800
+    size = 600
     screen = pg.display.set_mode((size, size), flags=pg.DOUBLEBUF | pg.NOFRAME)
 
     surf = pg.Surface((size, size))
@@ -31,8 +31,9 @@ if __name__ == "__main__":
 
     arr = []
     poses = []
+
     # coors = []
-    n = 550
+    n = 500
     chanse = 3
 
     for k in range(n):
@@ -43,7 +44,8 @@ if __name__ == "__main__":
 
         # x, y = rnd(300, 350), rnd(300, 350)
         # polar = rnd(1, settings.polar_number)
-        polar = rnd(1, 3 + chanse)
+
+        polar = rnd(1, settings.polar_number - 1 + chanse)
         polar = 1 if polar < 1 + chanse else polar - chanse + 1
         arr.append(Dot(x, y, polar, settings))
 
@@ -93,8 +95,9 @@ if __name__ == "__main__":
 
         # цикл обработки событий
         for i in pg.event.get():
-            if i.type == pg.QUIT:
-                exit()
+            if i.type == pg.KEYDOWN:
+                if i.key == 113:
+                    exit()
 
         # --------
         # изменение объектов и многое др.
